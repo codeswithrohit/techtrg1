@@ -3,7 +3,9 @@ import { useRouter } from "next/router";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaChevronUp, FaChevronDown } from 'react-icons/fa';
-const FileUploadForm = () => {
+import axios from "axios";
+const FileUploadForm = ({userData}) => {
+  const router = useRouter();
   const [mainname, setMainName] = useState('');
   const [name, setName] = useState('');
   const [subname, setSubname] = useState('');
@@ -24,7 +26,17 @@ const FileUploadForm = () => {
       [fileId]: !prev[fileId],
     }));
   };
+  const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    if (!userData) return; // Wait until userData is available
+
+    if (userData?.selectedCourse !== "MASTER ADMIN") {
+      router.push("/");
+    } else {
+      setLoading(false); // Stay on the page if the user is MASTER ADMIN
+    }
+  }, [userData, router]);
   const toggleLectures = (fileId, topicIndex) => {
     setExpandedLectures((prev) => ({
       ...prev,
@@ -40,7 +52,20 @@ const FileUploadForm = () => {
 
     fetchFiles();
   }, []);
-
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const fetchPassword = async () => {
+    try {
+      const res = await axios.get("/api/password");
+      setPassword(res.data?.password || "No password found");
+      setMessage("");
+    } catch (error) {
+      setMessage("Error fetching password");
+    }
+  };
+  useEffect(() => {
+    fetchPassword();
+  }, []);
   const openPptOrDoc = async (filePath, fileType) => {
     const res = await fetch(filePath);
     const blob = await res.blob();
@@ -74,7 +99,7 @@ const FileUploadForm = () => {
 
     reader.readAsDataURL(blob);
   };
-  const router = useRouter();
+
   const handleMainnameChange = (e) => {
     setMainName(e.target.value);
     setName('');
@@ -214,30 +239,47 @@ const FileUploadForm = () => {
   };
   console.log("topics",topics)
   const deleteFile = async (fileId) => {
-    console.log('Attempting to delete file with ID:', fileId); // Log file ID
+    console.log("Attempting to delete file with ID:", fileId); // Log file ID
   
-    if (confirm('Are you sure you want to delete this file?')) {
-      try {
-        const res = await fetch(`/api/delete?id=${fileId}`, {
-          method: 'DELETE',
-        });
+    const confirmDelete = window.confirm("Are you sure you want to delete this file?");
+    if (!confirmDelete) return;
   
-        console.log('Response status:', res.status); // Log the status code
+    const enteredPassword = window.prompt("Enter delete password:");
+    if (!enteredPassword) {
+      toast.error("Password is required to delete the file.");
+      return;
+    }
+  
+    if (enteredPassword !== password) { // Ensure correctPassword is defined
+      toast.error("Incorrect password. File deletion failed.");
+      return;
+    }
+  
+    try {
+      const res = await fetch(`/api/delete?id=${fileId}`, {
+        method: "DELETE",
+      });
+  
+      console.log("Response status:", res.status); // Log the status code
+  
+      if (!res.ok) {
         const responseData = await res.json();
-        console.log('Response data:', responseData); // Log the response data
-  
-        if (res.ok) {
-          setFiles(files.filter(file => file._id !== fileId));
-          alert('File deleted successfully!');
-        } else {
-          alert('Failed to delete the file: ' + responseData.message);
-        }
-      } catch (error) {
-        console.error('Error deleting file:', error); // Log any fetch errors
-        alert('Failed to delete the file. See console for more details.');
+        throw new Error(responseData.message || "Failed to delete the file.");
       }
+  
+      const responseData = await res.json();
+      console.log("Response data:", responseData); // Log the response data
+  
+      // Remove the deleted file from state
+      setFiles((prevFiles) => prevFiles.filter((file) => file._id !== fileId));
+  
+      toast.success("File deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting file:", error);
+      toast.error(error.message || "An error occurred while deleting the file.");
     }
   };
+  
   
   const [subjectsData, setSubjectsData] = useState([]);
 
@@ -280,18 +322,20 @@ const FileUploadForm = () => {
     const matchesSearch = searchTerm ? `${file.name} ${file.subname}`.toLowerCase().includes(searchTerm.toLowerCase()) : true;
     return matchesName && matchesSubname && matchesSearch;
   });
-
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen text-xl">Checking access...</div>;
+  }
   return (
     <div className="min-h-screen items-center justify-center bg-white py-2 px-4 sm:px-6 lg:px-8">
       <div className="w-full  bg-white ">
-      <div className="flex justify-end">
+      <div className="flex justify-end mr-16 mt-12">
           <a href="/Admin/manageseleteoption"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Add Courses Options
           </a>
         </div>
-        <div className="flex mt-4 justify-end">
+        <div className="flex mt-4 justify-end mr-16">
           <button
             onClick={toggleAddForm}
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
@@ -589,6 +633,7 @@ const FileUploadForm = () => {
           </div>
         )}
       </div>
+      <ToastContainer/>
      
     </div>
   );

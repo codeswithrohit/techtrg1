@@ -62,7 +62,7 @@ const Login = () => {
         progress: undefined,
       });
       setTimeout(() => {
-        router.push('/phase2')
+        router.push(process.env.NEXT_PUBLIC_HOST)
 
       }, 1000);
 

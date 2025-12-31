@@ -1,102 +1,203 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+
+/* eslint-disable @next/next/no-img-element */
 import React from 'react'
+import { useRouter } from 'next/router';
+import { useState } from 'react'
+import { useEffect } from 'react'
+import Link from 'next/link';
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css';
+import Head from 'next/head'
+import { FaEye,FaEyeSlash } from 'react-icons/fa';
 
-const Login = () => {
+const Signup = ({userData}) => {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  useEffect(() => {
+    if (!userData) return; // Wait until userData is available
+
+    if (userData?.selectedCourse !== "MASTER ADMIN") {
+      router.push("/");
+    } else {
+      setLoading(false); // Stay on the page if the user is MASTER ADMIN
+    }
+  }, [userData, router]);
+  const backgroundStyle = {
+    backgroundImage: 'url(https://readymadeui.com/background-image.webp)',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem('token')) {
+      router.push('/')
+    }
+  }, [])
+
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [selectedCourse, setSelectedCourse] = useState('')
+  const [coursesList, setCoursesList] = useState([]);
+
+  const fetchCourses = async () => {
+    try {
+      const res = await fetch('/api/fetchcourselist');
+      const result = await res.json();
+      if (result.success) {
+        setCoursesList(result.data);
+      } else {
+        console.error('Failed to fetch courses');
+      }
+    } catch (error) {
+      console.error('Error fetching courses:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const handleChange = (e) => {
+    if (e.target.name === 'name') {
+      setName(e.target.value)
+    }
+    else if (e.target.name === 'email') {
+      setEmail(e.target.value)
+    }
+    else if (e.target.name === 'password') {
+      setPassword(e.target.value)
+    }
+    else if (e.target.name === 'course') {
+      setSelectedCourse(e.target.value)
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const data = { name, email, password, selectedCourse, }
+
+    let res = await fetch(`${process.env.NEXT_PUBLIC_HOST}/api/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    let response = await res.json()
+    console.log(response)
+    router.push('/login')
+    setEmail('')
+    setName('')
+    setPassword('')
+    toast.success('Your account has been created!', {
+      position: "top-left",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  }
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen text-xl">Checking access...</div>;
+  }
   return (
-    <div className="bg-[#0f2812] min-h-screen font-sans">
-      <div className="flex items-center max-md:flex-col gap-6">
-        
-        {/* FORM SECTION */}
-        <form className="max-w-lg w-full p-6 mx-auto">
-          <div className="mb-12 border-l-4 border-[#C5B358] pl-6">
-            <h1 className="text-white text-4xl font-black uppercase tracking-widest">Sign <span className="text-[#C5B358]">In</span></h1>
-            <p className="text-white/60 text-xs mt-4 uppercase font-bold tracking-widest leading-relaxed">
-              Personnel Authorization Required. Enter your credentials to access the tactical network.
-            </p>
-          </div>
-
-          <div className="space-y-10">
-            {/* Email Input */}
-            <div className="relative flex items-center">
-              <label className="text-[#C5B358] text-[11px] bg-[#0f2812] absolute px-2 top-[-10px] left-[18px] font-black uppercase tracking-widest z-10">
-                Service Email
-              </label>
-              <input 
-                type="email" 
-                placeholder="operator@sector.com"
-                className="px-4 py-4 bg-transparent w-full text-sm text-white border-2 border-white/10 focus:border-[#C5B358] rounded-sm outline-none transition-all placeholder:text-white/10" 
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" fill="#C5B358" className="w-[18px] h-[18px] absolute right-4 opacity-50" viewBox="0 0 682.667 682.667">
-                <g transform="matrix(1.33 0 0 -1.33 0 682.667)">
-                  <path fill="none" stroke="#C5B358" strokeMiterlimit="10" strokeWidth="40" d="M452 444H60c-22.091 0-40-17.909-40-40v-39.446l212.127-157.782c14.17-10.54 33.576-10.54 47.746 0L492 364.554V404c0 22.091-17.909 40-40 40Z"></path>
-                </g>
-              </svg>
+    <div>
+      <Head>
+        <title>39-GTC Signup</title>
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0" />
+        <link rel="icon" href="/rk1.ico" />
+      </Head>
+      <ToastContainer
+        position="top-left"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <div
+        className="flex justify-center items-center font-[sans-serif] text-[#333] h-full min-h-screen p-4"
+        style={backgroundStyle}
+      >
+        <div className="max-w-md w-full mx-auto">
+          <form onSubmit={handleSubmit} method="POST" className="bg-opacity-70 bg-white rounded-2xl p-6 shadow-[0_2px_16px_-3px_rgba(6,81,237,0.3)]">
+            <div className="mb-10">
+              <h3 className="text-3xl font-extrabold">Sign Up</h3>
             </div>
-
-            {/* Password Input */}
-            <div className="relative flex items-center">
-              <label className="text-[#C5B358] text-[11px] bg-[#0f2812] absolute px-2 top-[-10px] left-[18px] font-black uppercase tracking-widest z-10">
-                Security Key
-              </label>
-              <input 
-                type="password" 
-                placeholder="••••••••"
-                className="px-4 py-4 bg-transparent w-full text-sm text-white border-2 border-white/10 focus:border-[#C5B358] rounded-sm outline-none transition-all placeholder:text-white/10" 
-              />
-              <svg xmlns="http://www.w3.org/2000/svg" fill="#C5B358" className="w-[18px] h-[18px] absolute right-4 cursor-pointer opacity-50" viewBox="0 0 128 128">
-                <path d="M64 104C22.127 104 1.367 67.496.504 65.943a4 4 0 0 1 0-3.887C1.367 60.504 22.127 24 64 24s62.633 36.504 63.496 38.057a4 4 0 0 1 0 3.887C126.633 67.496 105.873 104 64 104zM8.707 63.994C13.465 71.205 32.146 96 64 96c31.955 0 50.553-24.775 55.293-31.994C114.535 56.795 95.854 32 64 32 32.045 32 13.447 56.775 8.707 63.994zM64 88c-13.234 0-24-10.766-24-24s10.766-24 24-24 24 10.766 24 24-10.766 24-24 24zm0-40c-8.822 0-16 7.178-16 16s7.178 16 16 16 16-7.178 16-16-7.178-16-16-16z"></path>
-              </svg>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center">
-                <input id="remember-me" name="remember-me" type="checkbox" className="h-4 w-4 shrink-0 border-white/20 rounded accent-[#C5B358]" />
-                <label htmlFor="remember-me" className="ml-3 block text-xs font-bold text-white/50 uppercase tracking-widest">
-                  Maintain Session
-                </label>
-              </div>
-              <div>
-                <a href="#" className="text-[#C5B358] font-black text-xs uppercase tracking-widest hover:text-white transition-colors">
-                  Key Recovery?
-                </a>
+            <div>
+              <div className="relative flex items-center">
+                <input name="name" onChange={handleChange}
+                  type="text"
+                  value={name} required
+                  className="bg-transparent w-full text-sm border-b border-[#333] px-2 py-3 outline-none placeholder:text-[#333]"
+                  placeholder="Enter Name" />
               </div>
             </div>
-          </div>
+            <div>
+              <div className="relative flex items-center mt-8">
+                <input name="email" onChange={handleChange}
+                  type="email"
+                  value={email} required
+                  className="bg-transparent w-full text-sm border-b border-[#333] px-2 py-3 outline-none placeholder:text-[#333]"
+                  placeholder="Enter email" />
+              </div>
+            </div>
+            <div className="mt-8">
+              <select
+                name="course"
+                value={selectedCourse}
+                onChange={handleChange}
+                required
+                className="bg-transparent w-full text-sm border-b border-[#333] px-2 py-3 outline-none placeholder:text-[#333]"
+              >
+                <option value="">Select Course</option>
+                {coursesList.map((course, index) => (
+                  <option key={index} value={course.courseName}>{course.courseName}</option>
+                ))}
+                <option value="MASTER ADMIN">MASTER ADMIN</option> {/* Added option for Master Admin */}
+              </select>
+            </div>
+            <div className="mt-8">
+              <div className="relative flex items-center">
+                <input name="password" onChange={handleChange}
+                  type={passwordVisible ? 'text' : 'password'}
+                  value={password} required
+                  className="bg-transparent w-full text-sm border-b border-[#333] px-2 py-3 outline-none placeholder:text-[#333]"
+                  placeholder="Enter password" />
+                  <div className='absolute right-2 cursor-pointer'
+                  onClick={() => setPasswordVisible(!passwordVisible) }
+                  >
+                    {passwordVisible? <FaEyeSlash/> : <FaEye/> }
+                  </div>
+              </div>
+            </div>
 
-          <div className="mt-12">
-            <button type="button" className="w-full shadow-2xl py-4 px-4 text-sm tracking-[0.2em] font-black rounded-sm text-white bg-gradient-to-r from-[#8B0000] to-[#B22222] border-b-4 border-[#4a0000] hover:brightness-110 active:translate-y-1 active:border-b-0 uppercase cursor-pointer transition-all">
-              Authorize Access
-            </button>
-            <p className="text-xs text-white/40 mt-8 text-center font-bold uppercase tracking-widest">
-              New Recruit? <a href="/register" className="text-[#C5B358] font-black hover:underline ml-1">Enlist Here</a>
-            </p>
-          </div>
-        </form>
+          
 
-        {/* INFO SIDEBAR */}
-        <div className="w-full md:max-w-96">
-          <div className="flex flex-col justify-center space-y-16 md:h-screen min-h-full bg-[#1a3c1d] border-l border-white/10 lg:px-10 px-6 py-12 relative overflow-hidden">
-            {/* Background Texture Effect */}
-            <div className="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-            
-            <div className="relative z-10">
-              <h4 className="text-[#C5B358] text-sm font-black uppercase tracking-widest border-b border-[#C5B358]/20 pb-2">Encrypted Comms</h4>
-              <p className="text-xs text-white/70 mt-3 leading-relaxed font-medium">All data transmissions are secured via 256-bit tactical encryption protocols.</p>
+            <div className="mt-10">
+              <button
+                type="Submit"
+                className="w-full py-2.5 px-4 text-sm font-semibold rounded-full text-white bg-[#333] hover:bg-[#222] focus:outline-none"
+              >
+                Sign Up
+              </button>
+              <p className="text-sm text-center mt-6">Don't have an account <a href='/login'
+                className="font-semibold hover:underline ml-1 whitespace-nowrap">Register here</a></p>
             </div>
-            
-            <div className="relative z-10">
-              <h4 className="text-[#C5B358] text-sm font-black uppercase tracking-widest border-b border-[#C5B358]/20 pb-2">Biometric Sync</h4>
-              <p className="text-xs text-white/70 mt-3 leading-relaxed font-medium">Maintain session persistence across secured devices for immediate field access.</p>
-            </div>
-            
-            <div className="relative z-10">
-              <h4 className="text-[#C5B358] text-sm font-black uppercase tracking-widest border-b border-[#C5B358]/20 pb-2">Protocol 4-0-4</h4>
-              <p className="text-xs text-white/70 mt-3 leading-relaxed font-medium">If security keys are compromised, initiate the recovery sequence immediately.</p>
-            </div>
-          </div>
+            <hr className="my-6 border-gray-500" />
+          </form>
         </div>
       </div>
     </div>
   )
 }
 
-export default Login;
+export default Signup
