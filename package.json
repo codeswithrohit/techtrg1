@@ -1,14 +1,17 @@
 {
-  "name": "39gtc",
+  "name": "39gtcprintingpress",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "start": "next start"
   },
   "dependencies": {
+    "next": "16.1.1",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-icons": "^5.5.0",
     "@cyntler/react-doc-viewer": "^1.15.0",
     "@pdftron/webviewer": "^10.9.0",
     "@react-pdf-viewer/core": "^3.12.0",
@@ -34,16 +37,12 @@
     "mongodb": "^6.6.2",
     "mongoose": "^8.4.0",
     "multer": "^1.4.5-lts.1",
-    "next": "^14.2.4",
     "next-connect": "^1.0.0",
     "pdfjs-dist": "^3.11.174",
-    "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-datepicker": "^7.5.0",
     "react-doc-viewer": "^0.1.13",
-    "react-dom": "^18",
     "react-file-reader": "^1.1.4",
-    "react-icons": "^5.2.1",
     "react-modal": "^3.16.1",
     "react-pptx": "^2.20.1",
     "react-select": "^5.8.2",
@@ -53,7 +52,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "@tailwindcss/postcss": "^4",
+    "tailwindcss": "^4"
   }
 }
