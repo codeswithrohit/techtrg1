@@ -1,180 +1,335 @@
-import React, { useState } from 'react'
-import { FaUser, FaBars, FaTimes, FaShoppingCart, FaSearch, FaCaretDown } from 'react-icons/fa'
-import { GiHelmet, GiBulletImpacts } from 'react-icons/gi'
+import Link from "next/link";
+import { FaSignOutAlt, FaSignInAlt } from 'react-icons/fa';
+import { ImMenu } from 'react-icons/im';
+import { AiFillCloseCircle } from 'react-icons/ai';
+import { RiAccountCircleFill, RiListSettingsFill } from 'react-icons/ri';
+import { BsPersonPlus, BsCardChecklist } from 'react-icons/bs';
+import { MdAssessment, MdInsertChart } from 'react-icons/md';
+import React, { useState, useEffect } from 'react';
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false)
+function Navbar({ logout, user, classname,selectedCourse }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+console.log("selectedcourse",selectedCourse)
+  // Automatically open the sidebar on large screens (lg and above)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
 
-  const navItems = [
-    { name: 'Home', href: '/' },
-    { name: 'About Us', href: '/aboutus' },
-    { name: 'Shop', href: '#', submenu: ['Uniforms', 'Gear', 'Footwear', 'Accessories'] },
-    { name: 'Contact Us', href: '/contactus' },
-  ]
+    window.addEventListener('resize', handleResize);
+
+    // Initial check
+    handleResize();
+
+    // Cleanup on component unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close the sidebar when a menu item is clicked
+  const handleMenuClick = () => {
+    setSidebarOpen(false);
+  };
 
   return (
-    <nav className="bg-gradient-to-b from-[#1a3c1d] to-[#0f2812] shadow-2xl sticky top-0 z-50 border-b-4 border-[#8B4513]">
-      {/* Top Strip */}
-      <div className="bg-gradient-to-r from-[#8B0000] via-[#B8860B] to-[#8B0000] py-1 px-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <p className="text-white text-xs md:text-sm font-medium tracking-wider">
-          🎉 Limited Time Offer! Enjoy 20% OFF your first purchase – Shop Now!
-          </p>
-          <div className="flex items-center space-x-4">
-            <span className="text-white text-xs hidden md:inline">Helpline: 1800-ARMY-IND</span>
-            <div className="flex space-x-2">
-              <div className="w-2 h-2 rounded-full bg-white"></div>
-              <div className="w-2 h-2 rounded-full bg-[#FFD700]"></div>
-              <div className="w-2 h-2 rounded-full bg-[#8B0000]"></div>
-            </div>
-          </div>
+    <header className={classname}>
+      <nav className="flex items-center justify-between p-4 bg-green-500 text-white">
+        {/* Logo */}
+        <div className="flex items-center space-x-3">
+          <img src="/logo.png" className="h-10" alt="Logo" />
+          <span className="text-lg font-bold">39-Gorkha Training Centre</span>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-24">
-          {/* Logo Section - Enhanced */}
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <div className="flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-[#2d5a2f] to-[#0f2812] border-4 border-[#8B4513] shadow-lg">
-             <img src='/logo.png' className='h-full w-full object-contain' />
-              
-              </div>
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">
-                <span className="text-white">39</span>
-                <span className="text-[#FFD700] ml-2">GTC</span>
-              </h1>
-              <p className="text-sm text-[#C5B358] font-semibold tracking-wider border-t border-[#8B4513] pt-1">
-                Printing Press
-              </p>
-            </div>
-          </div>
+        {/* Menu Toggle */}
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="text-black text-2xl  focus:outline-none"
+        >
+          <ImMenu />
+        </button>
+      </nav>
 
-        
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 right-0 h-full w-96 bg-gray-800 text-white transition-transform ${
+          sidebarOpen ? "translate-y-0" : "-translate-y-full"
+        } z-50 overflow-y-auto`} 
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-4 bg-green-600">
+          <h2 className="text-xl font-semibold">Menu</h2>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="text-red-600 text-2xl focus:outline-none"
+          >
+            <AiFillCloseCircle />
+          </button>
+        </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {navItems.map((item) => (
-              <div key={item.name} className="relative group">
-                <a
-                  href={item.href}
-                  className="text-white hover:text-[#FFD700] px-4 py-3 rounded-md text-lg font-bold transition-all duration-300 hover:bg-[#1a3c1d]/50 relative group/item"
-                >
-                  <span className="flex items-center">
-                    {item.name}
-                    {item.submenu && <FaCaretDown className="ml-1 text-[#C5B358]" />}
-                  </span>
-                  <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 group-hover/item:w-4/5 h-0.5 bg-gradient-to-r from-transparent via-[#FFD700] to-transparent transition-all duration-300"></span>
-                </a>
-                
-                {/* Dropdown for Shop */}
-                {item.submenu && (
-                  <div className="absolute left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0">
-                    <div className="bg-gradient-to-b from-[#1a3c1d] to-[#0f2812] border-2 border-[#8B4513] rounded-lg shadow-2xl p-2">
-                      {item.submenu.map((subItem) => (
-                        <a
-                          key={subItem}
-                          href="#"
-                          className="block px-4 py-3 text-white hover:text-[#FFD700] hover:bg-[#2d5a2f] rounded-md font-semibold transition-all duration-200 border-l-2 border-transparent hover:border-[#FFD700]"
-                        >
-                          {subItem}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            {/* Action Buttons */}
-            <div className="flex items-center space-x-4 ml-4">
-              <a href='/cart' className="relative p-3 text-white hover:text-[#FFD700] transition-colors duration-300">
-                <FaShoppingCart className="text-xl" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#8B0000] text-xs rounded-full flex items-center justify-center">
-                  3
-                </span>
-              </a>
-              
-              <a href='/login' className="flex items-center space-x-3 bg-gradient-to-r from-[#8B0000] to-[#B22222] hover:from-[#B22222] hover:to-[#8B0000] text-white px-6 py-3 rounded-lg font-bold transition-all duration-300 hover:shadow-xl hover:scale-105 border-2 border-[#FFD700]/30 shadow-lg group">
-                <div className="relative">
-                  <FaUser className="text-lg group-hover:animate-pulse" />
-                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-[#FFD700] rounded-full"></div>
-                </div>
-                <span className="tracking-wider">LOGIN</span>
-                <div className="w-1 h-6 bg-[#FFD700]/50 rounded-full"></div>
-              </a>
-            </div>
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center space-x-4">
-            <a href='/cart' className="p-3 text-white hover:text-[#FFD700] transition-colors">
-              <FaShoppingCart className="text-xl" />
-            </a>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-4 rounded-lg bg-gradient-to-r from-[#2d5a2f] to-[#1a3c1d] text-white hover:text-[#FFD700] hover:bg-[#1a3c1d] focus:outline-none transition-all duration-300 border-2 border-[#8B4513] shadow-lg"
+        {/* Sidebar Links */}
+        {selectedCourse === "MASTER ADMIN" ? (
+        <ul className="mt-4 space-y-4 p-4">
+        <li>
+            <Link
+              href="/phase2"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
             >
-              {isOpen ? <FaTimes className="text-2xl" /> : <FaBars className="text-2xl" />}
+              <BsPersonPlus />
+              <span>Home</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/aboutus"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <BsPersonPlus />
+              <span>About Us</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/searchdata"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <BsPersonPlus />
+              <span>Search Data</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/pre-course-registration"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <BsPersonPlus />
+              <span>Pre Course Registration</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/pre-course-students"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <BsCardChecklist />
+              <span>Pre Course Students</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/add-pre-course-performance"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span className="" >Add Pre Course Performance</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/compiled-result"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdInsertChart />
+              <span>Compiled Result</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/main-course-selection"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <RiListSettingsFill />
+              <span>Main Course Selection</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/maincoursestudent"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <RiAccountCircleFill />
+              <span>Main Course Students</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/unitwiseperformance"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Unit Wise Performance</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/viewcourses"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>View Course</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/addcourses"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Add Course</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/chartdata"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>View Course Analysis</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/miscellaneousdata"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <RiListSettingsFill />
+              <span>Miscellaneous Data</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/instructor-details"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Instructor Details</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/register"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Create User</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/managepassword"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Manage Password</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/backupdata"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Backup Data</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/password"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Delete Password</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/latestnews"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <MdAssessment />
+              <span>Latest News</span>
+            </Link>
+          </li>
+        </ul>
+          ) : (
+            <ul className="mt-4 space-y-4 p-4">
+            <li>
+            <Link
+  href={`/phase1/courses?selectedCourse=${selectedCourse}`} // Pass selectedCourse as query param
+  onClick={handleMenuClick}
+  className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+>
+  <MdAssessment />
+  <span>View Course</span>
+</Link>
+
+<li>
+            <Link
+              href="/aboutus"
+              onClick={handleMenuClick}
+              className="flex items-center space-x-2 hover:bg-green-700 p-2 rounded"
+            >
+              <BsPersonPlus />
+              <span>About Us</span>
+            </Link>
+          </li>
+
+            </li>
+            </ul>
+          )}
+
+        {/* Logout/Login */}
+        <div className="mt-auto p-4">
+          {user?.value ? (
+            <button
+              onClick={logout}
+              className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white w-full py-2 px-4 rounded"
+            >
+              <FaSignOutAlt />
+              <span>Logout</span>
             </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        <div className={`md:hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-          <div className="px-4 pt-4 pb-8 space-y-2 bg-gradient-to-b from-[#1a3c1d] to-[#0f2812] rounded-xl shadow-2xl mt-4 border-2 border-[#8B4513]">
-            {/* Mobile Search */}
-          \
-
-            {navItems.map((item) => (
-              <div key={item.name}>
-                <a
-                  href={item.href}
-                  className="flex items-center justify-between text-white hover:text-[#FFD700] hover:bg-[#2d5a2f]/50 px-4 py-4 rounded-lg text-lg font-bold transition-all duration-300 border-l-4 border-transparent hover:border-[#FFD700]"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                  {item.submenu && <FaCaretDown className="text-[#C5B358]" />}
-                </a>
-                {item.submenu && (
-                  <div className="ml-8 space-y-2 py-2">
-                    {item.submenu.map((subItem) => (
-                      <a
-                        key={subItem}
-                        href="#"
-                        className="block px-4 py-3 text-[#C5B358] hover:text-white hover:bg-[#2d5a2f]/30 rounded-md font-medium transition-all duration-200"
-                      >
-                        • {subItem}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            {/* Mobile Login Button */}
-            <div className="pt-6 mt-6 border-t-2 border-[#8B4513]">
-              <button className="w-full flex items-center justify-center space-x-3 bg-gradient-to-r from-[#8B0000] to-[#B22222] text-white px-6 py-4 rounded-lg font-bold transition-all duration-300 active:scale-95 border-2 border-[#FFD700]/30">
-                <FaUser className="text-lg" />
-                <span>SOLDIER LOGIN</span>
+          ) : (
+            <Link href="/login" className="block">
+              <button className="flex items-center space-x-2 bg-green-500 hover:bg-green-600 text-white w-full py-2 px-4 rounded">
+                <FaSignInAlt />
+                <span>Login</span>
               </button>
-            </div>
-            
-            <div className="text-center pt-4">
-              <p className="text-[#C5B358] text-sm font-semibold tracking-wider">
-                ⭐ AUTHENTIC MILITARY GRADE EQUIPMENT ⭐
-              </p>
-            </div>
-          </div>
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Active Indicator */}
-      <div className="h-1 bg-gradient-to-r from-[#8B0000] via-[#FFD700] to-[#8B0000] shadow-lg"></div>
-    </nav>
-  )
+      {/* Overlay */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed top-0 left-0 w-full h-full bg-black opacity-50 z-40"
+        ></div>
+      )}
+    </header>
+  );
 }
 
-export default Navbar
+export default Navbar;
