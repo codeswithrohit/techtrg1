@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1719218928428,
+    "title": "rohit",
+    "subtitle": "kumar",
+    "lectures": [
+      {
+        "lectureTitle": "gupta",
+        "filetype": "Video",
+        "videoPath": "/uploads/d6110eb95869c51cb5135f8ddbb0cc16"
+      }
+    ]
+  },
+  {
+    "id": 1719218991368,
+    "title": "saurav",
+    "subtitle": "kumar",
+    "lectures": [
+      {
+        "lectureTitle": "patel",
+        "filetype": "Ppt",
+        "videoPath": "/uploads/0f6d72771a6b0eff561c04b63c04b38d"
+      }
+    ]
+  },
+  {
+    "id": 1719219073773,
+    "title": "dfd",
+    "subtitle": "kjv",
+    "lectures": [
+      {
+        "lectureTitle": "kj",
+        "filetype": "Ppt",
+        "videoPath": "/uploads/5f61bd9ca59ebc32c693553b1a6d7b4c"
+      }
+    ]
+  }
+]
