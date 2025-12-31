@@ -36,7 +36,7 @@ console.log("selectedcourse",selectedCourse)
 
   return (
     <header className={classname}>
-      <nav className="flex items-center justify-between p-4 bg-green-500 text-white">
+      <nav className="flex items-center justify-between p-4 bg-[#0f2812] text-white">
         {/* Logo */}
         <div className="flex items-center space-x-3">
           <img src="/logo.png" className="h-10" alt="Logo" />
@@ -46,7 +46,7 @@ console.log("selectedcourse",selectedCourse)
         {/* Menu Toggle */}
         <button
           onClick={() => setSidebarOpen(true)}
-          className="text-black text-2xl  focus:outline-none"
+          className="text-white text-2xl  focus:outline-none"
         >
           <ImMenu />
         </button>
